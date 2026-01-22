@@ -12,7 +12,7 @@ const axiosClient = axios.create({
 // Interceptor cho Request: Chạy trước khi gửi yêu cầu lên server
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Log này để ae đang gọi đúng link API chưa
+    // Log này để ae biết đang gọi đúng link API chưa
     console.log(`🚀 [API Request]: ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
