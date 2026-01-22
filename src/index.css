@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 
 /* Import DM Sans Font from Google Fonts */
@@ -13,4 +14,38 @@
   --color-primary: #007ee1;
   --color-error: #bc738c;
   --color-background: #f3f7fa;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+@theme {
+  /* Colors */
+  --color-primary: #007fe0;
+  --color-primary-hover: #006bbd;
+  --color-background-light: #f3f7fa;
+  --color-background-dark: #0f1a23;
+  --color-surface-dark: #1a2632;
+  --color-error: #bc738c;
+
+  /* Typography */
+  --font-display: "Manrope", sans-serif;
+
+  /* Border Radius */
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Box Shadows */
+  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 }
