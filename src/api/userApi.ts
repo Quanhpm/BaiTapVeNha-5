@@ -1,6 +1,6 @@
 // CRUD Users
 import axiosClient from './axiosClient';
-import type { User, UserFormInput } from '../interfaces/types';
+import type { User, UserFormInput, UserProfileFormInput } from '../interfaces/types';
 
 export const userApi = {
   getAll: (): Promise<User[]> => {
@@ -21,5 +21,20 @@ export const userApi = {
 
   delete: (id: string): Promise<void> => {
     return axiosClient.delete(`/User/${id}`);
+  },
+
+  // Cập nhật role của user (admin only)
+  updateRole: (id: string, role: string): Promise<User> => {
+    return axiosClient.put(`/User/${id}`, { role });
+  },
+
+  // Khóa/mở khóa tài khoản (admin only)
+  toggleUserStatus: (id: string, isActive: boolean): Promise<User> => {
+    return axiosClient.put(`/User/${id}`, { isActive });
+  },
+
+  // Cập nhật profile (user/admin)
+  updateProfile: (id: string, data: UserProfileFormInput): Promise<User> => {
+    return axiosClient.put(`/User/${id}`, data);
   },
 };

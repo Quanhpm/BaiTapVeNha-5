@@ -13,6 +13,7 @@ import PostApproval from './pages/admin/PostApproval';
 // Import user pages
 import CreatePost from './pages/user/CreatePost';
 import MyPosts from './pages/user/MyPosts';
+import Profile from './pages/user/Profile';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
            <Route path="posts" element={<MyPosts />} />
            <Route path="create-post" element={<CreatePost />} />
+           <Route path="profile" element={<Profile />} />
         </Route>
       </Route>
 
