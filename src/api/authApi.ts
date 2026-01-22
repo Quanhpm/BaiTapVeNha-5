@@ -5,7 +5,7 @@ import type { User } from '../interfaces/types';
 export const authApi = {
   // Hàm Login giả lập, tại mockapi ko có chức năng login
   login: async (email: string, password: string): Promise<User> => {
-    const users: User[] = await axiosClient.get('/users');
+    const users: User[] = await axiosClient.get('/User');
 
     const user = users.find(
       (u) => u.email === email && u.password === password

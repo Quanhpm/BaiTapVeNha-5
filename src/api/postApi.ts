@@ -4,18 +4,18 @@ import axiosClient from './axiosClient';
 
 export const postApi = {
   getAll: (): Promise<Post[]> => {
-    return axiosClient.get('/posts');
+    return axiosClient.get('/Post');
   },
 
   create: (data: PostFormInput): Promise<Post> => {
-    return axiosClient.post('/posts', data);
+    return axiosClient.post('/Post', data);
   },
 
   update: (id: string, data: Partial<Post>): Promise<Post> => {
-    return axiosClient.put(`/posts/${id}`, data);
+    return axiosClient.put(`/Post/${id}`, data);
   },
 
   delete: (id: string): Promise<void> => {
-    return axiosClient.delete(`/posts/${id}`);
+    return axiosClient.delete(`/Post/${id}`);
   },
 };

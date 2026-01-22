@@ -4,22 +4,22 @@ import type { User, UserFormInput } from '../interfaces/types';
 
 export const userApi = {
   getAll: (): Promise<User[]> => {
-    return axiosClient.get('/users');
+    return axiosClient.get('/User');
   },
 
   getById: (id: string): Promise<User> => {
-    return axiosClient.get(`/users/${id}`);
+    return axiosClient.get(`/User/${id}`);
   },
 
   create: (data: UserFormInput): Promise<User> => {
-    return axiosClient.post('/users', data);
+    return axiosClient.post('/User', data);
   },
 
   update: (id: string, data: Partial<User>): Promise<User> => {
-    return axiosClient.put(`/users/${id}`, data);
+    return axiosClient.put(`/User/${id}`, data);
   },
 
   delete: (id: string): Promise<void> => {
-    return axiosClient.delete(`/users/${id}`);
+    return axiosClient.delete(`/User/${id}`);
   },
 };
