@@ -127,8 +127,8 @@ const Login = () => {
           </div>
 
           <div className="mt-8 text-center text-xs text-slate-400">
-            <p>Admin: admin@example.com / admin123</p>
-            <p>User: user@example.com / user123</p>
+            <p>Admin: admin@gmail.com / admin123</p>
+            <p>User: user@gmail.com / user123</p>
           </div>
         </div>
       </div>

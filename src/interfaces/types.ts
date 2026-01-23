@@ -11,6 +11,8 @@ export interface User {
   email: string;
   password?: string;
   role: Role;
+  avatar?: string;     // Avatar URL
+  isActive?: boolean;  // Trạng thái tài khoản (true: active, false: locked)
   createDate: string;
   updateDate: string;
 }
@@ -42,3 +44,13 @@ export interface RegisterFormData {
 // tạo nhma ko cần nhập mấy cái dữ liệu trong Omit, lên mockapi nó tự tạo cho (không cần id và date)
 export type PostFormInput = Omit<Post, 'id' | 'createDate' | 'updateDate'>;
 export type UserFormInput = Omit<User, 'id' | 'createDate' | 'updateDate'>;
+
+// Kiểu dữ liệu cho form cập nhật profile
+export interface UserProfileFormInput {
+  name?: string;
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+  avatar?: string;
+}
