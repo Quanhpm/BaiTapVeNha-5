@@ -1,75 +1,95 @@
-// User - Create Post (Create new post with image upload)
-import { useState } from 'react';
+// User - Edit Post (Edit existing post with image upload)
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { uploadApi } from '../../api/uploadApi';
 import { postApi } from '../../api/postApi';
 import { slugify } from '../../utils/helpers';
-import { POST_STATUS } from '../../constants';
-import type { PostFormInput } from '../../interfaces/types';
+import type { Post } from '../../interfaces/types';
 import ImageUploader from '../../components/ui/ImageUploader';
 
-interface CreatePostForm {
+interface EditPostForm {
   title: string;
   description: string;
   urlTag: string;
 }
 
-const CreatePost = () => {
+const EditPost = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [post, setPost] = useState<Post | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
-  const [imageError, setImageError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm<CreatePostForm>();
+  } = useForm<EditPostForm>();
 
-  // Get userId from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const currentUserId = currentUser?.id;
+  useEffect(() => {
+    if (id) {
+      fetchPost(id);
+    }
+  }, [id]);
 
-  const handleImageChange = (file: File | null) => {
-    setImageFile(file);
-    if (file) {
-      setImageError('');
+  const fetchPost = async (postId: string) => {
+    try {
+      setLoading(true);
+      const posts = await postApi.getAll();
+      const foundPost = posts.find((p) => p.id === postId);
+      if (foundPost) {
+        setPost(foundPost);
+        setCurrentImageUrl(foundPost.imageUrl);
+        reset({
+          title: foundPost.title,
+          description: foundPost.description,
+          urlTag: foundPost.urlTag || '',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching post:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onSubmit: SubmitHandler<CreatePostForm> = async (data) => {
-    // Validate image
-    if (!imageFile) {
-      setImageError('Please select an image for the post');
-      return;
-    }
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+  };
+
+  const onSubmit: SubmitHandler<EditPostForm> = async (data) => {
+    if (!post) return;
 
     try {
       setUploading(true);
 
-      // 1. Upload image to Cloudinary
-      const imageUrl = await uploadApi.uploadImage(imageFile);
+      // If new image uploaded, upload to Cloudinary
+      let imageUrl = currentImageUrl;
+      if (imageFile) {
+        imageUrl = await uploadApi.uploadImage(imageFile);
+      }
 
-      // 2. Create post data
-      const postData: PostFormInput = {
-        userId: currentUserId || '1',
+      // Update post data
+      const updateData: Partial<Post> = {
         title: data.title,
         description: data.description,
         imageUrl: imageUrl,
         urlTag: slugify(data.urlTag || data.title),
-        status: POST_STATUS.PENDING,
       };
 
-      // 3. Call API to create post
-      await postApi.create(postData);
+      // Call API to update post
+      await postApi.update(post.id, updateData);
 
-      alert('Post created successfully!');
+      alert('Post updated successfully!');
       navigate('/dashboard/posts');
     } catch (error) {
-      console.error('Error creating post:', error);
-      alert('An error occurred while creating the post. Please try again.');
+      console.error('Error updating post:', error);
+      alert('An error occurred while updating the post. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -81,6 +101,28 @@ const CreatePost = () => {
 
   const isLoading = uploading || isSubmitting;
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="animate-spin h-12 w-12 text-primary" />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <p className="text-gray-500 text-lg mb-4">Post not found</p>
+        <button
+          onClick={handleCancel}
+          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+        >
+          Back to Posts
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
       <main className="flex-1 overflow-y-auto p-8">
@@ -91,10 +133,10 @@ const CreatePost = () => {
               {/* Header */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Post Details
+                  Edit Post
                 </h2>
                 <p className="text-sm text-gray-500">
-                  Fill in the information below to create a new post.
+                  Update the information below to edit your post.
                 </p>
               </div>
 
@@ -211,8 +253,8 @@ const CreatePost = () => {
               {/* Image Uploader */}
               <ImageUploader
                 onImageChange={handleImageChange}
+                previewUrl={currentImageUrl}
                 disabled={isLoading}
-                error={imageError}
               />
             </div>
 
@@ -232,7 +274,7 @@ const CreatePost = () => {
                 className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium shadow-md shadow-primary/20 transition-all transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 {isLoading && <Loader2 className="animate-spin h-4 w-4" />}
-                <span>{isLoading ? 'Creating...' : 'Create'}</span>
+                <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
               </button>
             </div>
           </form>
@@ -242,4 +284,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default EditPost;
