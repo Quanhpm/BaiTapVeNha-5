@@ -15,6 +15,7 @@ import CreatePost from './pages/user/CreatePost';
 import EditPost from './pages/user/EditPost';
 import MyPosts from './pages/user/MyPosts';
 import PostDetail from './pages/user/PostDetail';
+import Profile from './pages/user/Profile';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="posts/:id" element={<PostDetail />} />
           <Route path="create-post" element={<CreatePost />} />
           <Route path="edit-post/:id" element={<EditPost />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Route>
 
