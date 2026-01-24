@@ -16,6 +16,14 @@ const PostDetail = () => {
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState(false);
 
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  // Use author if provided and has name, otherwise use currentUser
+  const displayName = (author && author.name) ? author.name : (currentUser.name || 'Unknown');
+  const displayEmail = (author && author.email) ? author.email : (currentUser.email || 'Content Creator');
+  const avatarUrl = (author && author.avatar) ? author.avatar : (currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
+
   useEffect(() => {
     if (id) {
       fetchPostDetail(id);
@@ -130,13 +138,13 @@ const PostDetail = () => {
               {/* Author Info */}
               <div className="flex items-center mb-8 pb-6 border-b border-gray-100">
                 <img
-                  alt={author?.name || 'Author'}
+                  alt={displayName}
                   className="h-12 w-12 rounded-full object-cover mr-4 ring-2 ring-gray-100"
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(author?.name || 'User')}&background=random`}
+                  src={avatarUrl}
                 />
                 <div>
-                  <p className="text-base font-bold text-gray-900">{author?.name || 'Unknown'}</p>
-                  <p className="text-sm text-gray-500">{author?.email || 'Content Creator'}</p>
+                  <p className="text-base font-bold text-gray-900">{displayName}</p>
+                  <p className="text-sm text-gray-500">{displayEmail}</p>
                 </div>
               </div>
 

@@ -11,6 +11,13 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, author, onClick, onEdit, onDelete }: PostCardProps) => {
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  // Use author prop if provided and has name, otherwise use currentUser
+  const displayName = (author && author.name) ? author.name : (currentUser.name || 'Unknown');
+  const avatarUrl = (author && author.avatar) ? author.avatar : (currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
+
   return (
     <article 
       className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer"
@@ -38,12 +45,12 @@ const PostCard = ({ post, author, onClick, onEdit, onDelete }: PostCardProps) =>
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
           <div className="flex items-center">
             <img
-              alt={author?.name || 'Author'}
+              alt={displayName}
               className="h-8 w-8 rounded-full object-cover mr-2 bg-gray-200"
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(author?.name || 'User')}&background=random`}
+              src={avatarUrl}
             />
             <div>
-              <p className="text-xs font-medium text-gray-900">{author?.name || 'Unknown'}</p>
+              <p className="text-xs font-medium text-gray-900">{displayName}</p>
               <p className="text-xs text-gray-500">{formatDate(post.createDate)}</p>
             </div>
           </div>
