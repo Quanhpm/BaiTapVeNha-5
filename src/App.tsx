@@ -29,13 +29,11 @@ function App() {
            <Route path="posts" element={<MyPosts />} />
            <Route path="create-post" element={<CreatePost />} />
            <Route path="profile" element={<Profile />} />
+           <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
+             <Route path="users" element={<UserManagement />} />
+             <Route path="post-approval" element={<PostApproval />} />
+           </Route>
         </Route>
-      </Route>
-
-    
-      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
-        <Route path="/dashboard/users" element={<UserManagement />} />
-        <Route path="/dashboard/post-approval" element={<PostApproval />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
