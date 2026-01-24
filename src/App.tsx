@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROLES } from './constants';
 // Import layouts
 import DashboardLayout from './components/layouts/DashboardLayout';
@@ -23,19 +23,25 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-    
-      <Route element={<PrivateRoute />}>
-        <Route path="/dashboard" element={<DashboardLayout />}>
-           <Route path="posts" element={<MyPosts />} />
-           <Route path="create-post" element={<CreatePost />} />
-           <Route path="profile" element={<Profile />} />
-        </Route>
-      </Route>
 
-    
-      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
-        <Route path="/dashboard/users" element={<UserManagement />} />
-        <Route path="/dashboard/post-approval" element={<PostApproval />} />
+      {/* Protected routes */}
+      <Route element={<PrivateRoute />}>
+        {/* DashboardLayout bọc TẤT CẢ route con trong /dashboard */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          {/* vào /dashboard thì tự chuyển sang /dashboard/posts */}
+          <Route index element={<Navigate to="posts" replace />} />
+
+          {/* User routes */}
+          <Route path="posts" element={<MyPosts />} />
+          <Route path="create-post" element={<CreatePost />} />
+          <Route path="profile" element={<Profile />} />
+
+          {/* Admin routes trong DashboardLayout - chặn role !! */}
+          <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route path="users" element={<UserManagement />} />
+            <Route path="post-approval" element={<PostApproval />} />
+          </Route>
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFound />} />
