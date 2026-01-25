@@ -20,11 +20,9 @@ import Profile from './pages/user/Profile';
 function App() {
   return (
     <Routes>
-
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
 
       <Route element={<PrivateRoute />}>
         {/* DashboardLayout bọc TẤT CẢ route con trong /dashboard */}
@@ -34,13 +32,12 @@ function App() {
           <Route path="create-post" element={<CreatePost />} />
           <Route path="edit-post/:id" element={<EditPost />} />
           <Route path="profile" element={<Profile />} />
+
+          <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route path="/dashboard/users" element={<UserManagement />} />
+            <Route path="/dashboard/post-approval" element={<PostApproval />} />
+          </Route>
         </Route>
-      </Route>
-
-
-      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
-        <Route path="/dashboard/users" element={<UserManagement />} />
-        <Route path="/dashboard/post-approval" element={<PostApproval />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
