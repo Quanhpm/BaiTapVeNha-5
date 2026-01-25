@@ -232,10 +232,7 @@ const UserManagement = () => {
                     User
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Email Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Created Date
+                    Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
@@ -246,29 +243,12 @@ const UserManagement = () => {
                 {paginatedUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          {user.avatar ? (
-                            <img
-                              className="h-10 w-10 rounded-full object-cover"
-                              src={user.avatar}
-                              alt={user.name}
-                            />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                              <span className="text-white font-semibold text-sm">
-                                {user.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900">
+                          {user.name}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-semibold text-gray-900">
-                            {user.name}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {user.role === ROLES.ADMIN ? 'Administrator' : user.role === ROLES.USER ? 'User' : 'Viewer'}
-                          </div>
+                        <div className="text-xs text-gray-500">
+                          {user.role === ROLES.ADMIN ? 'Administrator' : user.role === ROLES.USER ? 'User' : 'Viewer'}
                         </div>
                       </div>
                     </td>
@@ -281,11 +261,8 @@ const UserManagement = () => {
                             : 'bg-gray-300 text-gray-800'
                         }`}
                       >
-                        {user.isActive !== false ? '● VERIFIED' : '● PENDING'}
+                        {user.isActive !== false ? '● ACTIVE' : '● DISABLED'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatDate(user.createDate)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex gap-2">
@@ -301,7 +278,7 @@ const UserManagement = () => {
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title={user.isActive !== false ? 'Lock' : 'Unlock'}
                         >
-                          {user.isActive !== false ? <Lock size={18} /> : <Unlock size={18} />}
+                          {user.isActive !== false ? <Unlock size={18} /> : <Lock size={18} />}
                         </button>
                       </div>
                     </td>
