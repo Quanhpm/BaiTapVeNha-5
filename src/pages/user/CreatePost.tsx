@@ -16,8 +16,6 @@ interface CreatePostForm {
   urlTag: string;
 }
 
-
-
 const CreatePost = () => {
   const navigate = useNavigate();
   const [imageFile, setImageFile] = useState<File | null>(null);

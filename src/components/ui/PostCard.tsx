@@ -1,6 +1,7 @@
 import { Pencil, Trash2 } from 'lucide-react';
 import type { Post, User } from '../../interfaces/types';
 import { formatDate } from '../../utils/helpers';
+import { POST_STATUS } from '../../constants';
 
 interface PostCardProps {
   post: Post;
@@ -18,18 +19,27 @@ const PostCard = ({ post, author, onClick, onEdit, onDelete }: PostCardProps) =>
   const displayName = (author && author.name) ? author.name : (currentUser.name || 'Unknown');
   const avatarUrl = (author && author.avatar) ? author.avatar : (currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
 
+  // Check if post is not published (draft or pending)
+  const isNotPublished = post.status !== POST_STATUS.PUBLISHED;
+
   return (
     <article 
-      className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer"
+      className={`bg-white rounded-xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer ${isNotPublished ? 'opacity-60' : ''}`}
       onClick={() => onClick?.(post)}
     >
       {/* Image */}
-      <div className="h-48 overflow-hidden">
+      <div className="h-48 overflow-hidden relative">
         <img
           alt={post.title}
           className="w-full h-full object-cover"
           src={post.imageUrl || 'https://via.placeholder.com/400x300?text=No+Image'}
         />
+        {/* Pending Badge */}
+        {isNotPublished && (
+          <div className="absolute top-2 left-2 px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-md">
+            Pending Approval
+          </div>
+        )}
       </div>
 
       {/* Content */}
