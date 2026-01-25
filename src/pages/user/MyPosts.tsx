@@ -54,7 +54,7 @@ const MyPosts = () => {
   };
 
   const handleClick = (post: Post) => {
-    navigate(`/dashboard/posts/${post.id}`);
+    navigate(`/dashboard/posts/${post.urlTag}`);
   };
 
   const handleEdit = (post: Post) => {
