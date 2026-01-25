@@ -16,6 +16,11 @@ interface CreatePostForm {
   urlTag: string;
 }
 
+
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import type { User } from '../../interfaces/types';
+
 const CreatePost = () => {
   const navigate = useNavigate();
   const [imageFile, setImageFile] = useState<File | null>(null);

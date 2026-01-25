@@ -142,7 +142,6 @@ const DashboardLayout = () => {
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <Outlet />
