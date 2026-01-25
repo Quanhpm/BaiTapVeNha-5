@@ -1,23 +1,25 @@
 // Reusable Select component
 
-import type { SelectHTMLAttributes } from 'react';
+import type { SelectHTMLAttributes, ReactNode } from 'react';
 
 interface SelectOption {
   value: string;
   label: string;
 }
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
   label?: string;
   error?: string;
-  options: SelectOption[];
+  options?: SelectOption[];
+  children?: ReactNode;
 }
 
 const Select = ({ 
   label, 
   error, 
   options,
-  className = '', 
+  className = '',
+  children,
   ...props 
 }: SelectProps) => {
   return (
@@ -33,11 +35,15 @@ const Select = ({
         } ${className}`}
         {...props}
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {options ? (
+          options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))
+        ) : (
+          children
+        )}
       </select>
       {error && (
         <p className="mt-1 text-sm text-[#bc738c]">{error}</p>
