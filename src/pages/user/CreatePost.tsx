@@ -16,6 +16,16 @@ interface CreatePostForm {
   urlTag: string;
 }
 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { postApi } from '../../api/postApi';
+import { uploadApi } from '../../api/uploadApi';
+import { slugify } from '../../utils/helpers';
+import { POST_STATUS } from '../../constants';
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import type { User } from '../../interfaces/types';
+
 const CreatePost = () => {
   const navigate = useNavigate();
   const [imageFile, setImageFile] = useState<File | null>(null);

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROLES } from './constants';
 // Import layouts
 import DashboardLayout from './components/layouts/DashboardLayout';
@@ -27,6 +27,7 @@ function App() {
 
 
       <Route element={<PrivateRoute />}>
+        {/* DashboardLayout bọc TẤT CẢ route con trong /dashboard */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="posts" element={<MyPosts />} />
           <Route path="posts/:id" element={<PostDetail />} />
