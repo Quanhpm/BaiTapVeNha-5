@@ -3,7 +3,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'outline';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -22,6 +22,7 @@ const Button = ({
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:bg-gray-400',
     danger: 'bg-[#bc738c] text-white hover:bg-[#a85f76] active:bg-[#944a60]',
     success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800',
+    outline: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100',
   };
   
   const sizeStyles = {
