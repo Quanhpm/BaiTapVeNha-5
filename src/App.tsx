@@ -27,10 +27,10 @@ function App() {
       <Route element={<PrivateRoute />}>
         {/* DashboardLayout bọc TẤT CẢ route con trong /dashboard */}
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route path="posts" element={<MyPosts />} />
-          <Route path="posts/:id" element={<PostDetail />} />
-          <Route path="create-post" element={<CreatePost />} />
-          <Route path="edit-post/:id" element={<EditPost />} />
+        <Route path="posts" element={<MyPosts />} />
+        <Route path="posts/:urlTag" element={<PostDetail />} />
+        <Route path="create-post" element={<CreatePost />} />
+        <Route path="edit-post/:id" element={<EditPost />} />
           <Route path="profile" element={<Profile />} />
 
           <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>

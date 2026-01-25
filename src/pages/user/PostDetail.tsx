@@ -9,7 +9,7 @@ import { userApi } from '../../api/userApi';
 import Modal from '../../components/ui/Modal';
 
 const PostDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { urlTag } = useParams<{ urlTag: string }>();
   const navigate = useNavigate();
   const [post, setPost] = useState<Post | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
@@ -25,12 +25,12 @@ const PostDetail = () => {
   const avatarUrl = (author && author.avatar) ? author.avatar : (currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
 
   useEffect(() => {
-    if (id) {
-      fetchPostDetail(id);
+    if (urlTag) {
+      fetchPostDetail(urlTag);
     }
-  }, [id]);
+  }, [urlTag]);
 
-  const fetchPostDetail = async (postId: string) => {
+  const fetchPostDetail = async (postUrlTag: string) => {
     try {
       setLoading(true);
       const [posts, users] = await Promise.all([
@@ -38,7 +38,8 @@ const PostDetail = () => {
         userApi.getAll(),
       ]);
       
-      const foundPost = posts.find((p) => p.id === postId);
+      // Find post by urlTag instead of id
+      const foundPost = posts.find((p) => p.urlTag === postUrlTag);
       if (foundPost) {
         setPost(foundPost);
         const foundAuthor = users.find((u) => u.id === foundPost.userId);
@@ -118,7 +119,7 @@ const PostDetail = () => {
             <div className="w-full bg-gray-100">
               <img
                 alt={post.title}
-                className="w-full h-auto max-h-[500px] object-contain"
+                className="w-full h-auto max-h-125 object-contain"
                 src={post.imageUrl || 'https://via.placeholder.com/800x400?text=No+Image'}
               />
             </div>
