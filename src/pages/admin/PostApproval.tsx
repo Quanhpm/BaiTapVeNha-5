@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  Edit2,
   Trash2,
   ChevronLeft,
   ChevronRight,
@@ -17,7 +15,6 @@ import Select from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
 
 const PostApproval = () => {
-  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,19 +23,8 @@ const PostApproval = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
-  const [editCurrentIndex, setEditCurrentIndex] = useState(0);
-  const [formData, setFormData] = useState({
-    title: '',
-    urlTag: '',
-    imageUrl: '',
-    videoLink: '',
-    description: '',
-  });
 
   const itemsPerPage = 10;
 
@@ -135,103 +121,6 @@ const PostApproval = () => {
     }
   };
 
-  // Handle create post
-  const handleCreatePost = async () => {
-    if (!formData.title.trim()) {
-      toast.error('Vui lòng nhập tiêu đề bài viết');
-      return;
-    }
-
-    try {
-      const newPost = await postApi.create({
-        title: formData.title,
-        urlTag: formData.urlTag || formData.title.toLowerCase().replace(/\s+/g, '-'),
-        imageUrl: formData.imageUrl || 'https://via.placeholder.com/400x300?text=No+Image',
-        description: formData.description,
-        videoLink: formData.videoLink,
-        status: 'draft' as const,
-        userId: Math.random().toString(36).substr(2, 9),
-        createDate: new Date().toISOString(),
-        updateDate: new Date().toISOString(),
-      });
-      
-      setPosts([...posts, newPost]);
-      toast.success('Tạo bài viết thành công');
-      setShowCreateModal(false);
-      resetFormData();
-    } catch (error) {
-      toast.error('Lỗi khi tạo bài viết');
-      console.error(error);
-    }
-  };
-
-  const resetFormData = () => {
-    setFormData({
-      title: '',
-      urlTag: '',
-      imageUrl: '',
-      videoLink: '',
-      description: '',
-    });
-  };
-
-  // Handle edit post
-  const handleEditClick = (post: Post) => {
-    const index = paginatedPosts.findIndex((p) => p.id === post.id);
-    setEditingPost(post);
-    setEditCurrentIndex(index);
-    setFormData({
-      title: post.title,
-      urlTag: post.urlTag,
-      imageUrl: post.imageUrl,
-      videoLink: post.videoLink,
-      description: post.description,
-    });
-    setShowEditModal(true);
-  };
-
-  const confirmEditPost = async () => {
-    if (!editingPost || !formData.title.trim()) {
-      toast.error('Vui lòng nhập tiêu đề bài viết');
-      return;
-    }
-
-    try {
-      const updatedPost = await postApi.update(editingPost.id, {
-        ...editingPost,
-        title: formData.title,
-        urlTag: formData.urlTag,
-        imageUrl: formData.imageUrl,
-        videoLink: formData.videoLink,
-        description: formData.description,
-        updateDate: new Date().toISOString(),
-      });
-      setPosts(posts.map((p) => (p.id === editingPost.id ? updatedPost : p)));
-      toast.success('Cập nhật bài viết thành công');
-      setShowEditModal(false);
-      setEditingPost(null);
-      resetFormData();
-    } catch (error) {
-      toast.error('Lỗi khi cập nhật bài viết');
-      console.error(error);
-    }
-  };
-
-  // Navigate to next/previous post
-  const goToPreviousPost = () => {
-    if (editCurrentIndex > 0) {
-      const prevPost = paginatedPosts[editCurrentIndex - 1];
-      handleEditClick(prevPost);
-    }
-  };
-
-  const goToNextPost = () => {
-    if (editCurrentIndex < paginatedPosts.length - 1) {
-      const nextPost = paginatedPosts[editCurrentIndex + 1];
-      handleEditClick(nextPost);
-    }
-  };
-
   // Get status badge color and label
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -239,8 +128,6 @@ const PostApproval = () => {
         return { bg: '#10b981', text: 'Published' };
       case 'draft':
         return { bg: '#6366f1', text: 'Draft' };
-      case 'pending':
-        return { bg: '#f59e0b', text: 'Review' };
       default:
         return { bg: '#6b7280', text: status };
     }
@@ -315,14 +202,6 @@ const PostApproval = () => {
             ))}
           </Select>
         </div>
-
-        {/* Create Post Button */}
-        <Button
-          onClick={() => setShowCreateModal(true)}
-          className="w-full md:w-auto"
-        >
-          + Create Post
-        </Button>
       </div>
 
       {/* Results Info */}
@@ -376,7 +255,7 @@ const PostApproval = () => {
                           <img
                             src={post.imageUrl}
                             alt={post.title}
-                            className="w-12 h-12 rounded object-cover flex-shrink-0"
+                            className="w-12 h-12 rounded object-cover shrink-0"
                           />
                           {/* Title and Slug */}
                           <div className="flex-1 min-w-0">
@@ -420,13 +299,6 @@ const PostApproval = () => {
                       {/* Actions */}
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleEditClick(post)}
-                            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit2 size={18} className="text-blue-600" />
-                          </button>
                           <button
                             onClick={() => handleDeleteClick(post)}
                             className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
@@ -486,31 +358,6 @@ const PostApproval = () => {
             </button>
           </div>
         )}
-
-        {/* Post Navigation - Navigate within current page */}
-        {paginatedPosts.length > 1 && (
-          <div className="flex items-center justify-center px-6 py-4 gap-2 bg-gray-50">
-            <button
-              onClick={goToPreviousPost}
-              disabled={editCurrentIndex === 0}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft size={18} />
-              Previous Post
-            </button>
-            <span className="text-sm text-gray-600">
-              Post {editCurrentIndex + 1} of {paginatedPosts.length}
-            </span>
-            <button
-              onClick={goToNextPost}
-              disabled={editCurrentIndex === paginatedPosts.length - 1}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Next Post
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -564,7 +411,6 @@ const PostApproval = () => {
             <option value="">-- Select status --</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
-            <option value="pending">Review</option>
           </Select>
         </div>
         <div className="flex gap-3 justify-end">
@@ -580,274 +426,6 @@ const PostApproval = () => {
           <Button onClick={confirmStatusChange} disabled={!selectedStatus}>
             Update
           </Button>
-        </div>
-      </Modal>
-
-      {/* Create Post Modal */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          resetFormData();
-        }}
-        title="New Post"
-      >
-        <div className="space-y-6 max-h-[70vh] overflow-y-auto">
-          {/* Post Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Post Title
-            </label>
-            <Input
-              placeholder="e.g. 10 Ways to Improve SEO"
-              value={formData.title}
-              onChange={(e) => {
-                setFormData({ ...formData, title: e.target.value });
-                // Auto-generate URL slug from title
-                if (!formData.urlTag) {
-                  const slug = e.target.value.toLowerCase().replace(/\s+/g, '-');
-                  setFormData((prev) => ({ ...prev, urlTag: slug }));
-                }
-              }}
-            />
-          </div>
-
-          {/* URL Slug */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL Slug <span className="text-gray-500">(Auto-generated)</span>
-            </label>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-600 mr-2">example.com/</span>
-              <Input
-                placeholder="10-ways-to-improve-seo"
-                value={formData.urlTag}
-                onChange={(e) => setFormData({ ...formData, urlTag: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {/* Featured Image */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Featured Image
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                  <svg
-                    className="w-8 h-8 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-blue-600 font-medium mb-1">Click to upload</p>
-                <p className="text-gray-500 text-sm">SVG, PNG, JPG or GIF (max. 2MB)</p>
-                <Input
-                  type="text"
-                  placeholder="Or paste image URL"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="mt-3"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Video Link */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Video Link <span className="text-gray-500">(Optional)</span>
-            </label>
-            <Input
-              placeholder="https://youtube.com/..."
-              value={formData.videoLink}
-              onChange={(e) => setFormData({ ...formData, videoLink: e.target.value })}
-            />
-          </div>
-
-          {/* Content */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Content
-            </label>
-            <textarea
-              placeholder="Start writing your amazing post..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={5}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
-        </div>
-
-        {/* Modal Actions */}
-        <div className="flex gap-3 justify-end mt-6 pt-6 border-t">
-          <Button
-            onClick={() => {
-              setShowCreateModal(false);
-              resetFormData();
-            }}
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button onClick={handleCreatePost}>
-            Save Post
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Edit Post Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => {
-          setShowEditModal(false);
-          setEditingPost(null);
-          resetFormData();
-        }}
-        title={`Edit Post (${editCurrentIndex + 1}/${paginatedPosts.length})`}
-      >
-        <div className="space-y-6 max-h-[70vh] overflow-y-auto">
-          {/* Post Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Post Title
-            </label>
-            <Input
-              placeholder="e.g. 10 Ways to Improve SEO"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            />
-          </div>
-
-          {/* URL Slug */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL Slug
-            </label>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-600 mr-2">example.com/</span>
-              <Input
-                placeholder="10-ways-to-improve-seo"
-                value={formData.urlTag}
-                onChange={(e) => setFormData({ ...formData, urlTag: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {/* Featured Image */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Featured Image
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-              <div className="flex flex-col items-center">
-                {formData.imageUrl && (
-                  <img
-                    src={formData.imageUrl}
-                    alt="Preview"
-                    className="w-full h-40 object-cover rounded mb-3"
-                  />
-                )}
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                  <svg
-                    className="w-8 h-8 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-blue-600 font-medium mb-1">Click to upload</p>
-                <p className="text-gray-500 text-sm">SVG, PNG, JPG or GIF (max. 2MB)</p>
-                <Input
-                  type="text"
-                  placeholder="Or paste image URL"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="mt-3"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Video Link */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Video Link <span className="text-gray-500">(Optional)</span>
-            </label>
-            <Input
-              placeholder="https://youtube.com/..."
-              value={formData.videoLink}
-              onChange={(e) => setFormData({ ...formData, videoLink: e.target.value })}
-            />
-          </div>
-
-          {/* Content */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Content
-            </label>
-            <textarea
-              placeholder="Start writing your amazing post..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={5}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
-        </div>
-
-        {/* Modal Actions with Navigation */}
-        <div className="flex items-center justify-between mt-6 pt-6 border-t">
-          <div className="flex gap-2">
-            <button
-              onClick={goToPreviousPost}
-              disabled={editCurrentIndex === 0}
-              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft size={16} />
-              Previous
-            </button>
-            <button
-              onClick={goToNextPost}
-              disabled={editCurrentIndex === paginatedPosts.length - 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              onClick={() => {
-                setShowEditModal(false);
-                setEditingPost(null);
-                resetFormData();
-              }}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button onClick={confirmEditPost}>
-              Update Post
-            </Button>
-          </div>
         </div>
       </Modal>
     </div>
