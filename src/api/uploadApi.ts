@@ -25,7 +25,5 @@ export const uploadApi = {
       console.error('Upload error:', error);
       throw new Error('Failed to upload image');
     }
-
-    return data.secure_url;
   },
 };
